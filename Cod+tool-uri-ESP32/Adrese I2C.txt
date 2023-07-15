@@ -10,7 +10,8 @@
 
 Found address: 56 (0x38)	0x38-temp+hum-Verificat
 Found address: 61 (0x3D)	0x3D-oled -verificat
-Found address: 64 (0x40)	0x40-ina219-Verificat-rezistor2.2ohm
+Found address: 64 (0x40)	0x40-ina219-Verificat
+Found address: 65 (0x41)	0x41-ina219-Verificat
 Found address: 68 (0x44)	0x44-ina219-Verificat
 Found address: 69 (0x45)	0x45-ina219-Verificat
 Found address: 119 (0x77)	0x77-barometru-Verificat
