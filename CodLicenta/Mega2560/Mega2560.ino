@@ -5,20 +5,51 @@
 #include <SPI.h>
 #include <SD.h>
 #include <Adafruit_NeoPixel.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 const int chipSelect = 53;//pin chipselect micro SD
+int statusLeduri=13;
 
 #define PIN            6  //pin neopixeli
 #define NUMPIXELS      60 //numarul de leduri 
 
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 Adafruit_BMP280 bmp;
-Adafruit_INA219 ina219_A(0x40);//Arduino,esp
-Adafruit_INA219 ina219_B(0x41);//panou cablu lung
-Adafruit_INA219 ina219_C(0x44);//panou cablu scurt
-Adafruit_INA219 ina219_D(0x45);//load 2 panou mobil
+Adafruit_INA219 ina219_A(0x40);//Arduino,esp-no contacts bridged  -dreapta
+Adafruit_INA219 ina219_B(0x41);//panou cablu lung-bridge A0 -  langa presetupe
+Adafruit_INA219 ina219_C(0x44);//panou cablu scurt-bridge A1- mijloc
+Adafruit_INA219 ina219_D(0x45);//load 2 panou mobil -full bridge A0&A1 -stanga
 
 void setup(void) 
 {
-  Serial.begin(115200);
+Serial.begin(115200);
+
+  //display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+  display.display();
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawPixel(10, 10, SSD1306_WHITE);
+  display.display();
+
+  pinMode(statusLeduri,INPUT);
+strip.begin();
+strip.show();
+
+  
     
     ina219_A.begin();
     ina219_B.begin();
@@ -45,6 +76,13 @@ float power_mW = 0;
 
 void loop(void) 
 {
+  if(digitalRead(statusLeduri)==HIGH){
+  colorWipe(strip.Color(255, 0, 0), 5); // Red
+  colorWipe(strip.Color(0, 255, 0), 5); // Green
+  colorWipe(strip.Color(0, 0, 255), 5); // Blue
+  }else{
+    colorWipe(strip.Color(0,0,0), 0); 
+  }
   pressure = bmp.readPressure();
 	temperature = bmp.readTemperature();
   Serial.print(F("Pressure: "));
@@ -106,5 +144,18 @@ void loop(void)
   Serial.println("");
   //======================================================================================================INA219
 
-  delay(5000);
+  display.clearDisplay();
+	display.setCursor(0,0);
+	display.setTextSize(1);
+	display.println("Full");
+	display.display();
+  delay(2000);
+}
+
+void colorWipe(uint32_t color, int wait) {
+  for(int i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, color);
+    strip.show();
+    delay(wait);
+  }
 }
