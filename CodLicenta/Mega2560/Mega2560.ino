@@ -7,8 +7,10 @@
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_AHTX0.h>
 
-int a=0;
+Adafruit_AHTX0 aht;
+
 
 File myfile;
 
@@ -53,13 +55,71 @@ unsigned long long int actual_time      = 0;                          //--
 #define task_1m       60000                                           //------
 #define task_5m      300000                                           //----
 #define task_1h     3600000                                           //--
+//=============================================================================Control Motoare BTS7960
+int motor1Len=4;
+int motor1Ren=5;
+int motor1R_PWM=6;
+int motor1L_PWM=7;
 
+int motor2Len=8;
+int motor2Ren=9;
+int motor2R_PWM=10;
+int motor2L_PWM=11;
+//=============================================================================Control Motoare 
 
+//============================================================Vectori pentru filtrarea datelor provenite de la senzori
+const int nrSamples_INA219=10;                
+int indexSample=0;
+
+int achizitii_0x40_mW[nrSamples_INA219];
+int total_0x40_mW=0;
+
+int achizitii_0x44_mW[nrSamples_INA219];
+int total_0x44_mW=0;
+
+double achizitii_0x40_mA[nrSamples_INA219];
+double total_0x40_mA=0;
+
+double achizitii_0x44_mA[nrSamples_INA219];
+double total_0x44_mA=0.0;
+
+double achizitii_0x40_V[nrSamples_INA219];
+double total_0x40_V=0.0;
+
+double achizitii_0x44_V[nrSamples_INA219];
+double total_0x44_V=0.0;
+//===========================================================
+sensors_event_t humidity, temp;
+
+double pressure;
+double temperature;
+
+double shuntvoltage_0x40 = 0;
+double busvoltage_0x40 = 0;
+double current_mA_0x40 = 0;
+double loadvoltage_0x40 = 0;
+double power_mW_0x40 = 0;
+
+double shuntvoltage_0x44 = 0;
+double busvoltage_0x44 = 0;
+double current_mA_0x44 = 0;
+double loadvoltage_0x44 = 0;
+double power_mW_0x44 = 0;
+
+int alarmaTemperatura=0;
+int pinReleuVentESP=24;
+int pinReleuVentIna219=25;
+int pinReleu3=23;
+int pinReleu4=24;
+int pinSelectOLED=26;
+
+int cursor=0;
 void setup(void) 
 {
-  Serial.begin(115200);
-   pinMode(pinCS, OUTPUT);
-  if (SD.begin(53))
+  Serial.begin(115200);//comnicarea seriala cu PC-ul
+  
+  pinMode(pinCS, OUTPUT);//punul pentru activarea cardului microSD
+  if (SD.begin(53))//incepe comunicarea cu modulul microSD
   {
     Serial.println("SD card is ready to use.");
   } else
@@ -67,46 +127,59 @@ void setup(void)
     Serial.println("SD card initialization failed");
     return;
   }
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+  
+  pinMode(pinReleuVentESP,OUTPUT);
+  pinMode(pinReleuVentIna219,OUTPUT);
+  pinMode(pinReleu3,OUTPUT);
+  pinMode(pinReleu4,OUTPUT);
+  pinMode(pinSelectOLED,INPUT);
+  
+  if(digitalRead(pinSelectOLED) == HIGH){
+    digitalWrite(pinReleuVentESP,HIGH);
+  }else{
+    digitalWrite(pinReleuVentESP,LOW);
   }
-  display.setTextSize(2); // Draw 2X-scale text
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    //Serial.println(F("SSD1306 allocation failed"));
+  }
   display.setTextColor(SSD1306_WHITE);
 
   pinMode(StatusComutatorExtern,INPUT);//pinul 13, legat pentru probe la un switch intre GND si 5V
-
   strip.begin();
   strip.show();
 
   ina219_0x40.begin();
-  //ina219_B.begin();
+  //ina219_B.begin();//senzor ars
   ina219_0x44.begin();
-  //ina219_D.begin();
-  bmp.begin();
-
-  Serial.println("Hello! X2");//linii pentru depanare de erori
+  //ina219_D.begin();//senzor ars
+  bmp.begin();//bmp280 - preniune si temperatura
+  aht.begin();//aht21 - temperatura si umiditate aer
 
   if (! ina219_0x40.begin()/*||!ina219_B.begin()*/||!ina219_0x44.begin()/*||!ina219_D.begin()*/) {//verific daca cel putin un chip INA219 este functional
     Serial.println("Failed to find INA219 chip");// initial credeam ca aici se ajunge doar daca sunt deconectate liniile de I2C ...
     while (1) { delay(10); }
   }
-   
+  //=============================================================================Control Motoare BTS7960
+  pinMode(  motor1Len    ,OUTPUT);
+  pinMode(  motor1Ren    ,OUTPUT);
+  pinMode(  motor1R_PWM  ,OUTPUT);
+  pinMode(  motor1L_PWM  ,OUTPUT);
+  pinMode(  motor2Len    ,OUTPUT);
+  pinMode(  motor2Ren    ,OUTPUT);
+  pinMode(  motor2R_PWM  ,OUTPUT);
+  pinMode(  motor2L_PWM  ,OUTPUT);
+  digitalWrite(motor1Len    ,LOW); 
+  digitalWrite(motor1Ren    ,LOW); 
+  digitalWrite(motor1R_PWM  ,LOW); 
+  digitalWrite(motor1L_PWM  ,LOW); 
+  digitalWrite(motor2Len    ,LOW); 
+  digitalWrite(motor2Ren    ,LOW); 
+  digitalWrite(motor2R_PWM  ,LOW); 
+  digitalWrite(motor2L_PWM  ,LOW); 
+  //=============================================================================Control Motoare
 }
-float pressure;
-float temperature;
 
-float shuntvoltage_0x40 = 0;
-float busvoltage_0x40 = 0;
-float current_mA_0x40 = 0;
-float loadvoltage_0x40 = 0;
-float power_mW_0x40 = 0;
-
-float shuntvoltage_0x44 = 0;
-float busvoltage_0x44 = 0;
-float current_mA_0x44 = 0;
-float loadvoltage_0x44 = 0;
-float power_mW_0x44 = 0;
 
 
 void loop(void) 

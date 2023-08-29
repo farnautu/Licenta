@@ -1,4 +1,38 @@
 void func_100ms()
 {
+  //=======================================================================================================INA219
+  shuntvoltage_0x40 = ina219_0x40.getShuntVoltage_mV();
+  busvoltage_0x40 = ina219_0x40.getBusVoltage_V();
+  current_mA_0x40 = ina219_0x40.getCurrent_mA();
+  power_mW_0x40 = ina219_0x40.getPower_mW();
+  loadvoltage_0x40 = busvoltage_0x40 + (shuntvoltage_0x40 / 1000);
   
+  shuntvoltage_0x44 = ina219_0x44.getShuntVoltage_mV();
+  busvoltage_0x44 = ina219_0x44.getBusVoltage_V();
+  current_mA_0x44 = ina219_0x44.getCurrent_mA();
+  power_mW_0x44 = ina219_0x44.getPower_mW();
+  loadvoltage_0x44 = busvoltage_0x44 + (shuntvoltage_0x44 / 1000);
+  
+  achizitii_0x44_mA[indexSample]=fabs(current_mA_0x44);
+  achizitii_0x44_mW[indexSample]=power_mW_0x44;
+  achizitii_0x44_V[indexSample] =busvoltage_0x44;
+  achizitii_0x40_mA[indexSample]=fabs(current_mA_0x40);
+  achizitii_0x40_mW[indexSample]=power_mW_0x40;
+  achizitii_0x40_V[indexSample] =busvoltage_0x40;
+  
+  if(indexSample<9){
+    indexSample=indexSample+1;
+  }else{
+    indexSample=0;
+  }
+  
+  //======================================================================================================INA219
+  //==========================================desenez un cerc pe OLED , feedback la rularea codului 
+  display.fillCircle(66+cursor,60,2,WHITE);
+	display.display();
+  if(cursor<64){
+    cursor=cursor+8;
+  }else{
+    cursor=0;
+  }
 }
