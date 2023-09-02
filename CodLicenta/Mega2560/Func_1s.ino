@@ -101,4 +101,3 @@ void func_1s()
 
   //la dimensiunea 1 , caracterele au 5x8 pixeli // NU STERGE!!!!!!!!!!!!!!!!!
 }
-

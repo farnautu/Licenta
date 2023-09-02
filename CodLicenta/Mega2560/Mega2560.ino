@@ -116,15 +116,15 @@ int pinSelectOLED=26;
 int cursor=0;
 void setup(void) 
 {
-  Serial.begin(115200);//comnicarea seriala cu PC-ul
+  //Serial.begin(115200);//comnicarea seriala cu PC-ul
   
   pinMode(pinCS, OUTPUT);//punul pentru activarea cardului microSD
   if (SD.begin(53))//incepe comunicarea cu modulul microSD
   {
-    Serial.println("SD card is ready to use.");
+    //Serial.println("SD card is ready to use.");
   } else
   {
-    Serial.println("SD card initialization failed");
+    //Serial.println("SD card initialization failed");
     return;
   }
   
@@ -157,7 +157,7 @@ void setup(void)
   aht.begin();//aht21 - temperatura si umiditate aer
 
   if (! ina219_0x40.begin()/*||!ina219_B.begin()*/||!ina219_0x44.begin()/*||!ina219_D.begin()*/) {//verific daca cel putin un chip INA219 este functional
-    Serial.println("Failed to find INA219 chip");// initial credeam ca aici se ajunge doar daca sunt deconectate liniile de I2C ...
+    //Serial.println("Failed to find INA219 chip");// initial credeam ca aici se ajunge doar daca sunt deconectate liniile de I2C ...
     while (1) { delay(10); }
   }
   //=============================================================================Control Motoare BTS7960

@@ -16,3 +16,4 @@ Found address: 68 (0x44)	0x44-ina219-Verificat
 Found address: 69 (0x45)	0x45-ina219-Verificat
 Found address: 119 (0x77)	0x77-barometru-Verificat
 Found address: 83 (0x53) 	Adxl345 -verificat
+Found address: 72 (0x48)	ADS1015 -verificat
