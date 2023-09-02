@@ -22,7 +22,7 @@ void func_1s()
   //Serial.println(total_0x40_mA);
   
   if(digitalRead(pinSelectOLED) == HIGH){//====================================================  afisare date INA,ATH,BMP
-    digitalWrite(pinReleuVentESP,HIGH);
+    digitalWrite(pinReleuVentESP,LOW);
     display.clearDisplay();
 	  display.setTextSize(1);
 	  display.setCursor(0  ,0  );display.print("MCU_0x44:");
@@ -41,58 +41,38 @@ void func_1s()
     display.setCursor(0  ,56 );display.print(total_0x40_V/10.0);
     display.setCursor(40 ,56 );display.print("V");
 
-    display.setCursor(64 ,0 );display.print("Presiune:");
-    display.setCursor(64 ,8 );display.print(pressure);
+    display.setCursor(60 ,0 );display.print("Presiune:");
+    display.setCursor(60 ,8 );display.print(pressure);
     display.setCursor(115,8 );display.print("Pa");
 
-    display.setCursor(64 ,16 );display.print("Temp:");
-    display.setCursor(64 ,24 );display.print("T1:");
-    display.setCursor(84 ,24 );display.print(temperature);
+    display.setCursor(60 ,16 );display.print("Temp:");
+    display.setCursor(60 ,24 );display.print("T1:");
+    display.setCursor(80 ,24 );display.print(temperature);
     display.setCursor(118,24 );display.print("C");
-    display.setCursor(64 ,32 );display.print("T2:");
-    display.setCursor(84 ,32);display.print(temp.temperature);
+    display.setCursor(60 ,32 );display.print("T2:");
+    display.setCursor(80 ,32);display.print(temp.temperature);
     display.setCursor(118,32);display.print("C");
 
-    display.setCursor(64 ,40 );display.print("Umiditate:");
-    display.setCursor(64 ,48 );display.print(humidity.relative_humidity);
+    display.setCursor(60 ,40 );display.print("Umiditate:");
+    display.setCursor(60 ,48 );display.print(humidity.relative_humidity);
     display.setCursor(118,48 );display.print("%");
 
 	  display.display();
-  }else{//=====================================================================================afisare date ADXL ADS (pozitie panou)
-  digitalWrite(pinReleuVentESP,LOW);
+  }else{//=====================================================================================afisare date ADXL ADC (pozitie panou)
+  digitalWrite(pinReleuVentESP,HIGH);
     display.clearDisplay();
 	  display.setTextSize(1);
-	  display.setCursor(0  ,0  );display.print("Proba");
-    display.setCursor(0  ,8  );display.print(round(total_0x44_mW/10));
-    display.setCursor(40 ,8  );display.print("mW");
-    display.setCursor(0  ,16 );display.print(total_0x44_mA/10.0);
-    display.setCursor(40 ,16 );display.print("mA");
-    display.setCursor(0  ,24 );display.print(total_0x44_V/10.0);
-    display.setCursor(40 ,24 );display.print("V");
-  
-	  display.setCursor(0  ,32 );display.print("X.Y_0x40:");
-    display.setCursor(0  ,40 );display.print(round(total_0x40_mW/10));
-    display.setCursor(40 ,40 );display.print("mW");
-    display.setCursor(0  ,48 );display.print(total_0x40_mA/10.0);
-    display.setCursor(40 ,48 );display.print("mA");
-    display.setCursor(0  ,56 );display.print(total_0x40_V/10.0);
-    display.setCursor(40 ,56 );display.print("V");
-
-    display.setCursor(64 ,0 );display.print("Presiune:");
-    display.setCursor(64 ,8 );display.print(pressure);
-    display.setCursor(115,8 );display.print("Pa");
-
-    display.setCursor(64 ,16 );display.print("Temp:");
-    display.setCursor(64 ,24 );display.print("T1:");
-    display.setCursor(84 ,24 );display.print(temperature);
-    display.setCursor(118,24 );display.print("C");
-    display.setCursor(64 ,32 );display.print("T2:");
-    display.setCursor(84 ,32);display.print(temp.temperature);
-    display.setCursor(118,32);display.print("C");
-
-    display.setCursor(64 ,40 );display.print("Done!");
-    display.setCursor(64 ,48 );display.print(humidity.relative_humidity);
-    display.setCursor(118,48 );display.print("%");
+	  display.setCursor(60 ,8  );display.print("Tracking:");
+    display.setCursor(60 ,16 );display.print("P1:");
+    display.setCursor(80 ,16 );display.print(punct1);
+    display.setCursor(60 ,24 );display.print("P2:");
+    display.setCursor(80 ,24 );display.print(punct2);
+    display.setCursor(60 ,32 );display.print("P3:");
+    display.setCursor(80 ,32);display.print(punct3);
+    display.setCursor(60 ,40 );display.print("P4:");
+    display.setCursor(80 ,40 );display.print(punct4);
+    display.setCursor(60 ,48 );display.print("P5:");
+    display.setCursor(80 ,48);display.print(punct5);
 
 	  display.display();
   }

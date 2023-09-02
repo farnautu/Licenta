@@ -114,6 +114,20 @@ int pinReleu4=24;
 int pinSelectOLED=26;
 
 int cursor=0;
+
+//====================================================================Fotorezistori
+int adc1=A8;
+int adc2=A9;
+int adc3=A10;
+int adc4=A11;
+int adc5=A12;
+
+int punct1 =0;
+int punct2 =0;
+int punct3 =0;
+int punct4 =0;
+int punct5 =0;
+//====================================================================
 void setup(void) 
 {
   //Serial.begin(115200);//comnicarea seriala cu PC-ul

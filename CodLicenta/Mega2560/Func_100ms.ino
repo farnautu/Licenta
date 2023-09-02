@@ -28,7 +28,7 @@ void func_100ms()
   
   //======================================================================================================INA219
   //==========================================desenez un cerc pe OLED , feedback la rularea codului 
-  display.fillCircle(66+cursor,60,2,WHITE);
+  display.fillCircle(62+cursor,60,2,WHITE);
 	display.display();
   if(cursor<64){
     cursor=cursor+8;
