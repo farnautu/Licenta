@@ -22,7 +22,8 @@ void func_1s()
   //Serial.println(total_0x40_mA);
   
   if(digitalRead(pinSelectOLED) == HIGH){//====================================================  afisare date INA,ATH,BMP
-    digitalWrite(pinReleuVentESP,LOW);
+   
+
     display.clearDisplay();
 	  display.setTextSize(1);
 	  display.setCursor(0  ,0  );display.print("MCU_0x44:");
@@ -59,7 +60,8 @@ void func_1s()
 
 	  display.display();
   }else{//=====================================================================================afisare date ADXL ADC (pozitie panou)
-  digitalWrite(pinReleuVentESP,HIGH);
+  
+
     display.clearDisplay();
 	  display.setTextSize(1);
 	  display.setCursor(60 ,8  );display.print("Tracking:");
@@ -71,8 +73,6 @@ void func_1s()
     display.setCursor(80 ,32);display.print(punct3);
     display.setCursor(60 ,40 );display.print("P4:");
     display.setCursor(80 ,40 );display.print(punct4);
-    display.setCursor(60 ,48 );display.print("P5:");
-    display.setCursor(80 ,48);display.print(punct5);
 
 	  display.display();
   }

@@ -120,13 +120,11 @@ int adc1=A8;
 int adc2=A9;
 int adc3=A10;
 int adc4=A11;
-int adc5=A12;
 
 int punct1 =0;
 int punct2 =0;
 int punct3 =0;
 int punct4 =0;
-int punct5 =0;
 //====================================================================
 void setup(void) 
 {
