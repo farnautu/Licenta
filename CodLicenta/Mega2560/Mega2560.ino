@@ -8,11 +8,28 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_AHTX0.h>
+#include <Adafruit_ADXL345_U.h>
 
+
+Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified();
 Adafruit_AHTX0 aht;
+
+double X_out, Y_out, Z_out;
+bool impactDetectat=false;
+
+const int nrSamples_ADXL=10;                
+int indexSample_ADXL=0;
+
+double achizitii_X[nrSamples_ADXL];
+double total_X=0;
+double achizitii_Y[nrSamples_ADXL];
+double total_Y=0;
+double achizitii_Z[nrSamples_ADXL];
+double total_Z=0;
 
 
 File myfile;
+
 
 const int pinCS = 53;//pin chipselect micro SD
 int StatusComutatorExtern=13;
@@ -43,7 +60,7 @@ unsigned long long int prev_time_100ms  = 0;                          //------
 unsigned long long int prev_time_1s     = 0;                          //--------
 unsigned long long int prev_time_5s     = 0;                          //---------- declarare valori pentru task-uri 
 unsigned long long int prev_time_1m     = 0;                          //--------
-unsigned long long int prev_time_5m     = 0;                          //------
+unsigned long long int prev_time_10m     = 0;                          //------
 unsigned long long int prev_time_1h     = 0;                          //----
 unsigned long long int actual_time      = 0;                          //--
 
@@ -53,7 +70,7 @@ unsigned long long int actual_time      = 0;                          //--
 #define task_1s        1000                                           //----------definire valori pentru recurenta
 #define task_5s        5000                                           //--------
 #define task_1m       60000                                           //------
-#define task_5m      300000                                           //----
+#define task_10m      600000                                           //----
 #define task_1h     3600000                                           //--
 //=============================================================================Control Motoare BTS7960
 int motor1Len=4;
@@ -125,6 +142,8 @@ int punct1 =0;
 int punct2 =0;
 int punct3 =0;
 int punct4 =0;
+
+bool pozFinala=false;
 //====================================================================
 void setup(void) 
 {
@@ -158,8 +177,7 @@ void setup(void)
   display.setTextColor(SSD1306_WHITE);
 
   pinMode(StatusComutatorExtern,INPUT);//pinul 13, legat pentru probe la un switch intre GND si 5V
-  strip.begin();
-  strip.show();
+  
 
   ina219_0x40.begin();
   //ina219_B.begin();//senzor ars
@@ -190,13 +208,17 @@ void setup(void)
   digitalWrite(motor2R_PWM  ,LOW); 
   digitalWrite(motor2L_PWM  ,LOW); 
   //=============================================================================Control Motoare
+
+  Serial.begin(9600); 
+   if(!accel.begin())
+   {
+      Serial.println("No valid sensor found");
+      while(1);
+   }
 }
-
-
 
 void loop(void) 
 {
-
   actual_time=millis();
   if(actual_time-prev_time_10ms>=task_10ms){
     func_10ms();
@@ -222,54 +244,12 @@ void loop(void)
     func_1m();
     prev_time_1m=actual_time;
   }
-  if(actual_time-prev_time_5m>=task_5m){
-    func_5m();
-    prev_time_5m=actual_time;
+  if(actual_time-prev_time_10m>=task_10m){
+    func_10m();
+    prev_time_10m=actual_time;
   }
   if(actual_time-prev_time_1h>=task_1h){
     func_1h();
     prev_time_1h=actual_time;
   }
-
 }
-
-//shuntvoltage = ina219_B.getShuntVoltage_mV();
-  //busvoltage = ina219_B.getBusVoltage_V();
-  //current_mA = ina219_B.getCurrent_mA();
-  //power_mW = ina219_B.getPower_mW();
-  //loadvoltage = busvoltage + (shuntvoltage / 1000);
-  //
-  //Serial.print("B  B  Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  //Serial.print("B  B  Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  //Serial.print("B  B  Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  //Serial.print("B  B  Current:       "); Serial.print(current_mA); Serial.println(" mA");
-  //Serial.print("B  B  Power:         "); Serial.print(power_mW); Serial.println(" mW");
-  //Serial.println("");
-
-//shuntvoltage = ina219_D.getShuntVoltage_mV();
-  //busvoltage = ina219_D.getBusVoltage_V();
-  //current_mA = ina219_D.getCurrent_mA();
-  //power_mW = ina219_D.getPower_mW();
-  //loadvoltage = busvoltage + (shuntvoltage / 1000);
-  //
-  //Serial.print("D  D  Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-  //Serial.print("D  D  Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-  //Serial.print("D  D  Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-  //Serial.print("D  D  Current:       "); Serial.print(current_mA); Serial.println(" mA");
-  //Serial.print("D  D  Power:         "); Serial.print(power_mW); Serial.println(" mW");
-  //Serial.println("");
-
-//if(digitalRead(StatusComutatorExtern)==HIGH){
-  //colorWipe(strip.Color(255, 0, 0)); // Red
-  //colorWipe(strip.Color(0, 255, 0)); // Green
-  //colorWipe(strip.Color(0, 0, 255)); // Blue
-  //}else{
-  //  colorWipe(strip.Color(0,0,0)); 
-  //}
-
-//void colorWipe(uint32_t color) {
-//  for(int i=0; i<strip.numPixels(); i++) {
-//    strip.setPixelColor(i, color);
-//    strip.show();
-//  }
-//}

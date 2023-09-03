@@ -1,6 +1,6 @@
 void func_1m()
 {
-   if(temperature>27.00){
+   if(temperature>40.00){
       digitalWrite(pinReleuVentIna219,HIGH);
       digitalWrite(pinReleuVentESP,HIGH);
    }else {

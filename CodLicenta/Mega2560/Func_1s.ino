@@ -62,6 +62,7 @@ void func_1s()
   }else{//=====================================================================================afisare date ADXL ADC (pozitie panou)
   
 
+    
     display.clearDisplay();
 	  display.setTextSize(1);
 	  display.setCursor(60 ,8  );display.print("Tracking:");
@@ -73,6 +74,7 @@ void func_1s()
     display.setCursor(80 ,32);display.print(punct3);
     display.setCursor(60 ,40 );display.print("P4:");
     display.setCursor(80 ,40 );display.print(punct4);
+    
 
 	  display.display();
   }
